@@ -1,5 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { default: isEmail } = require("validator/lib/isEmail");
+const bcrypt = require('bcrypt');
+
 
 const userSchema = new mongoose.Schema({
 
@@ -22,14 +24,16 @@ const userSchema = new mongoose.Schema({
 //fire this function after doc is saved to the db
 //it is must important we have the next callback to move to
 //  the next operation to be done.
-userSchema.post('save', function(doc, next){
-    console.log("New user was created & saved", doc);
-    next();
-});
+// userSchema.post('save', function(doc, next){
+//     console.log("New user was created & saved", doc);
+//     next();
+// });
 
 //fire function before doc is saved to the db
-userSchema.pre('save', function(next){
-    console.log("New user about to be created & saved", this);
+userSchema.pre('save', async function(next){
+    // console.log("New user about to be created & saved", this);
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
     next();
 });
 

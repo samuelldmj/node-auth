@@ -1,6 +1,13 @@
 const { handleErrors } = require("../errorHandler/handleError");
 const { userModel } = require("../model/users.model");
 
+/*
+How password hashing occurs
+take a password from the user->prepend a salt to it->then
+hash it-> then persist to a db.
+
+*/
+
 
 const signUpController = (req, res) => {
 
