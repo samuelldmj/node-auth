@@ -1,33 +1,58 @@
 <%- include('partials/header'); -%>
 
-<form method="post">
+    <form>
 
-<h2>Sign up</h2>
-<label for="email">Email</label>
-<input type="text" name="email" required>
-<div class="email error"></div>
+        <h2>Sign up</h2>
+        <label for="email">Email</label>
+        <input type="text" name="email" required>
+        <div class="email error"></div>
 
-<label for="password">Password</label>
-<input type="password" name="password" required>
-<div class="password error"></div>
+        <label for="password">Password</label>
+        <input type="password" name="password" required>
+        <div class="password error"></div>
 
-<button>Sign Up</button>
+        <button>Sign Up</button>
 
-</form>
+    </form>
 
-<script>
-    const form = document.querySelector('form');
-    console.dir(form);
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
+    <script>
+        const form = document.querySelector('form');
+        //console.dir(form);
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        //get the values
-        const email = form.email.value;
-        const pass = form.password.value;
+            //get the values
+            const email = form.email.value;
+            const pass = form.password.value;
+            const emailError = document.querySelector('.email.error');
+            const passwordError = document.querySelector('.password.error');
 
-        console.log(email);
-        console.log(pass);
-    })
-</script>
+            emailError.textContent = '';
+            passwordError.textContent = '';
 
-<%- include('partials/footer'); -%>
+            try {
+                //send data via (POST request) from the form field to the backend for processing
+                const res = await fetch('/signup', {
+                    method: 'POST',
+                    body: JSON.stringify({ email: email, password: pass }),
+                    headers: { 'Content-Type': 'application/json' }
+                })
+
+                //CLIENT RECEIVES A RESPONSE
+                const data = await res.json();
+                //console.log(data);
+                if (data.error) {
+                    emailError.textContent = data.error.email;
+                    passwordError.textContent = data.error.password;
+                }
+                if (data.user) {
+                    location.assign('/');
+                }
+
+            } catch (err) {
+                console.log(err);
+            }
+        })
+    </script>
+
+    <%- include('partials/footer'); -%>
