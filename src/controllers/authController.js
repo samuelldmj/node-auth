@@ -1,7 +1,7 @@
 const { handleErrors } = require("../helper/handleError");
 const { jwtManager, maxAge } = require("../helper/jwtManager");
 const { userModel } = require("../model/users.model");
-const jwt = require('jsonwebtoken');
+
 
 
 /*
@@ -63,9 +63,30 @@ const loginPostController = async (req, res) => {
     const { email, password } = req.body;
     // console.log(email, password);
     // res.send('user post login');
+    try {
+
+        const user = await userModel.login(email, password);
+
+        const token = jwtManager(user._id);
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            maxAge: maxAge * 1000
+        });
+
+        res.status(200).json({ user: user._id });
+
+    } catch (err) {
+        const error = handleErrors(err);
+        res.status(400).json({ error })
+    }
+
+}
 
 
+const logoutController = async (req, res) => {
 
+    res.cookie('jwt', '', { maxAge: 1 });
+    res.redirect('/');
 }
 
 
@@ -73,5 +94,6 @@ module.exports = {
     signUpController,
     signUpPostController,
     loginController,
-    loginPostController
+    loginPostController,
+    logoutController
 }

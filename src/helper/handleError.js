@@ -1,21 +1,31 @@
 
- //the err object has errors and message properties in it
- //in the errors object we have the properties object
+//the err object has errors and message properties in it
+//in the errors object we have the properties object
 const handleErrors = (err) => {
     console.log(err.message, err.code)
-    let errors = {email : '', password : '' };
+    let errors = { email: '', password: '' };
+
+
+    if (err.message === 'incorrect email') {
+        errors.email = 'email is not registered';
+    }
+
+
+    if (err.message === 'incorrect password') {
+        errors.password = 'invalid password';
+    }
 
 
     //duplicate error code
-    if(err.code ===  11000 ) {
+    if (err.code === 11000) {
         errors.email = 'Email already exist'
         return errors;
     }
 
     //validation errors
-    if(err.message.includes('user validation failed')){
-        Object.values(err.errors).forEach(({properties}) =>{
-        //  console.log(properties);
+    if (err.message.includes('user validation failed')) {
+        Object.values(err.errors).forEach(({ properties }) => {
+            //  console.log(properties);
             errors[properties.path] = properties.message;
 
         });

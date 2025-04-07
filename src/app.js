@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const { userRoutes } = require('./routes/userRoutes');
 const morgan = require('morgan');
 const path = require('path');
+const { requireAuth } = require('./middleware/authMiddleware');
 
 const app = express();
 
@@ -43,9 +44,13 @@ mongoose.connect(process.env.MONGO_DB_CONNECTION)
 
 
 // routes
-app.get('/', (req, res) => res.render('home'));
-app.get('/smoothies', (req, res) => res.render('smoothies'));
 app.use(userRoutes);
+app.get('/', (req, res) => res.render('home'));
+
+//requires authentication to access smoothies route.
+app.use(requireAuth);
+app.get('/smoothies', (req, res) => res.render('smoothies'));
+
 
 
 
