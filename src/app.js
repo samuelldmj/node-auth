@@ -8,6 +8,7 @@ const { userRoutes } = require('./routes/userRoutes');
 const morgan = require('morgan');
 const path = require('path');
 const { requireAuth } = require('./middleware/authMiddleware');
+const { checkUserMiddleware } = require('./middleware/checkUserMiddleware');
 
 const app = express();
 
@@ -44,12 +45,15 @@ mongoose.connect(process.env.MONGO_DB_CONNECTION)
 
 
 // routes
-app.use(userRoutes);
-app.get('/', (req, res) => res.render('home'));
+// Apply checkUserMiddleware to all routes (modified)
+app.use(checkUserMiddleware);
 
-//requires authentication to access smoothies route.
-app.use(requireAuth);
-app.get('/smoothies', (req, res) => res.render('smoothies'));
+// Regular routes
+app.get('/', (req, res) => res.render('home'));
+app.use(userRoutes);
+
+// Protected routes
+app.get('/smoothies', requireAuth, (req, res) => res.render('smoothies'));
 
 
 
