@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
 //fire function before doc is saved to the db
 userSchema.pre('save', async function (next) {
     // console.log("New user about to be created & saved", this);
-    const salt = await bcrypt.genSalt();
+    const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
     next();
 });
